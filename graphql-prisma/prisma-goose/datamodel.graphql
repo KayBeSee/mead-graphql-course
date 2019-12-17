@@ -9,8 +9,14 @@ type Show {
 type Set {
   id: ID!
   name: SetNumber
-  songs: [Song!]! @relation(name: "SongToSet", onDelete: SET_NULL)
+  tracks: [Track!]! @relation(name: "TrackToSet", onDelete: SET_NULL)
   show: Show! @relation(name: "SetToShow", onDelete: SET_NULL)
+}
+
+type Track {
+  song: ID! @relation(name: "TrackToSong", onDelete: SET_NULL)
+  show: ID! @relation(name: "TrackToSet", onDelete: SET_NULL)
+  notes: String
 }
 
 type Song {

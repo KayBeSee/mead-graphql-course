@@ -1,47 +1,104 @@
+import { getUserId } from '../utils';
+
 export const Query = {
-  users(parent, args, { db, prisma }, info) {
-    const opArgs = {};
+  users(parent, args, { prisma }, info) {
+    const opArgs = {
+      first: args.first,
+      skip: args.skip,
+      after: args.after,
+      orderBy: args.orderBy
+    };
 
     if (args.query) {
       opArgs.where = {
         OR: [
-          { name_contains: args.query },
-          { email_contains: args.query }
+          { name_contains: args.query }
         ]
       }
     }
 
     return prisma.query.users(opArgs, info)
   },
-  posts(parent, args, { db, prisma }, info) {
-    if (args.query) {
-      opArgs.where = {
-        OR: [
-          { title_contains: args.query },
-          { body_contains: args.query }
-        ]
+  myPosts(parent, args, { prisma, request }, info) {
+    const userId = getUserId(request);
+
+    const opArgs = {
+      first: args.first,
+      skip: args.skip,
+      after: args.after,
+      orderBy: args.orderBy,
+      where: {
+        author: {
+          id: userId
+        }
       }
+    }
+
+    if (args.query) {
+      opArgs.where.OR = [
+        { title_contains: args.query },
+        { body_contains: args.query }
+      ]
+    }
+
+    return prisma.query.posts(opArgs, info);
+  },
+  posts(parent, args, { prisma }, info) {
+    const opArgs = {
+      first: args.first,
+      skip: args.skip,
+      after: args.after,
+      orderBy: args.orderBy,
+      where: {
+        published: true
+      }
+    };
+
+    if (args.query) {
+      opArgs.where.OR = [
+        { title_contains: args.query },
+        { body_contains: args.query }
+      ];
     }
 
     return prisma.query.posts(opArgs, info)
   },
-  comments(parent, args, { db }, info) {
-    return db.comments
-  },
-  me() {
-    return {
-      id: 'abc123',
-      name: 'Foo Bar',
-      email: 'foo@bar.com',
-      age: 12
+  comments(parent, args, { prisma }, info) {
+    opArgs = {
+      first: args.first,
+      skip: args.skip,
+      after: args.after,
+      orderBy: args.orderBy
     }
+    return prisma.query.comments(ogArgs, info);
   },
-  post() {
-    return {
-      id: 'abc123',
-      title: 'My Title',
-      body: 'My Body',
-      published: true
+  me(parent, args, { prisma, request }, info) {
+    const userId = getUserId(request);
+
+    return prisma.query.user({
+      where: {
+        id: userId
+      }
+    });
+  },
+  async post(parent, args, { prisma, request }, info) {
+    const userId = getUserId(request, false)
+
+    const posts = await prisma.query.posts({
+      where: {
+        id: args.id,
+        OR: [{
+          published: true
+        }, {
+          author: userId
+        }]
+      }
+    }, info);
+
+    if (posts.length === 0) {
+      throw new Error('Post not found')
     }
+
+    return posts[0];
   },
 };
