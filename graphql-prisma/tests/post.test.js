@@ -1,16 +1,14 @@
 import 'cross-fetch/polyfill';
-import { gql } from 'apollo-boost';
 import seedDatabase, { userOne, postOne, postTwo } from './utils/seedDatabase';
 import getClient from './utils/getClient'
 import prisma from '../src/prisma'
 import { getPosts, myPosts, updatePost, createPost, deletePost } from './utils/operations'
 
-const client = getClient ();
-  
+const client = getClient();
+
 beforeEach(seedDatabase);
 
 test('Should get all published posts', async () => {
-
   const response = await client.query({ query: getPosts })
 
   expect(response.data.posts.length).toBe(1)
@@ -44,7 +42,7 @@ test('should be able to update own post', async () => {
 
 test('should create a new post', async () => {
   const client = getClient(userOne.jwt);
-  const variablres = {
+  const variables = {
     data: {
       title: "A test post",
       body: "",
@@ -52,7 +50,7 @@ test('should create a new post', async () => {
     }
   }
 
-  const { data } = await client.mutate({ mutation: createPost, variablres });
+  const { data } = await client.mutate({ mutation: createPost, variables });
 
   expect(data.createPost.title).toBe('A test post');
   expect(data.createPost.body).toBe('');

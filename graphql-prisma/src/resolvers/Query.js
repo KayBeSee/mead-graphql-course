@@ -72,14 +72,16 @@ export const Query = {
     }
     return prisma.query.comments(ogArgs, info);
   },
-  me(parent, args, { prisma, request }, info) {
+  async me(parent, args, { prisma, request }, info) {
     const userId = getUserId(request);
 
-    return prisma.query.user({
+    const foo = await prisma.query.user({
       where: {
         id: userId
       }
-    });
+    }, info);
+
+    return foo;
   },
   async post(parent, args, { prisma, request }, info) {
     const userId = getUserId(request, false)

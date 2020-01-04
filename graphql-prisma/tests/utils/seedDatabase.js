@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
 import prisma from '../../src/prisma'
 
 const userOne = {
@@ -34,7 +35,7 @@ const postTwo = {
   input: {
     title: 'My second post',
     body: 'This is the body of the post',
-    published: false,
+    published: false
   },
   post: undefined
 }
@@ -64,14 +65,14 @@ const seedDatabase = async () => {
     data: userOne.input
   });
 
-  userOne.jwt = jwt.sign({ userId: userOne.user.id}, process.env.JWT_SECRET)
+  userOne.jwt = jwt.sign({ userId: userOne.user.id }, process.env.JWT_TOKEN_SECRET)
 
   // create userTwo
   userTwo.user = await prisma.mutation.createUser({
     data: userTwo.input
   });
 
-  userTwo.jwt = jwt.sign({ userId: userTwo.user.id}, process.env.JWT_SECRET)
+  userTwo.jwt = jwt.sign({ userId: userTwo.user.id }, process.env.JWT_TOKEN_SECRET)
 
   // create post one
   postOne.post = await prisma.mutation.createPost({
@@ -81,7 +82,8 @@ const seedDatabase = async () => {
         connect: {
           id: userOne.user.id
         }
-      }
+      },
+      comments: []
     }
   });
 
@@ -93,21 +95,22 @@ const seedDatabase = async () => {
         connect: {
           id: userOne.user.id
         }
-      }
+      },
+      comments: []
     }
   });
 
   commentOne.comment = await prisma.mutation.createComment({
     data: {
       ...commentOne.input,
+      post: {
+        connect: {
+          id: postOne.post.id
+        }
+      },
       author: {
         connect: {
           id: userOne.user.id
-        }
-      },
-      post: {
-        comment: {
-          id: postOne.post.id
         }
       }
     }
@@ -116,18 +119,18 @@ const seedDatabase = async () => {
   commentTwo.comment = await prisma.mutation.createComment({
     data: {
       ...commentTwo.input,
+      post: {
+        connect: {
+          id: postOne.post.id
+        }
+      },
       author: {
         connect: {
           id: userOne.user.id
-        }
-      },
-      post: {
-        comment: {
-          id: postOne.post.id
         }
       }
     }
   })
 }
 
-  export { seedDatabase as default, userOne, userTwo, postOne, postTwo, commentOne, commentTwo }
+export { seedDatabase as default, userOne, userTwo, postOne, postTwo, commentOne, commentTwo }

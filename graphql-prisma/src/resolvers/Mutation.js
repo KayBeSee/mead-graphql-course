@@ -28,7 +28,7 @@ export const Mutation = {
       throw new Error('Unable to login')
     }
 
-    const isMatch = bcrypt.compare(args.data.password, user.password);
+    const isMatch = await bcrypt.compare(args.data.password, user.password);
     if (!isMatch) {
       throw new Error('Unable to login')
     }
@@ -81,7 +81,7 @@ export const Mutation = {
     const userId = getUserId(request);
 
     const postExists = await prisma.exists.Post({
-      id: args.data.id,
+      id: args.id,
       author: {
         id: userId
       }
@@ -127,7 +127,7 @@ export const Mutation = {
   async createComment(parent, args, { request }, info) {
     const userId = getUserId(request);
 
-    const postExists = await prisma.exists.posts({
+    const postExists = await prisma.exists.Post({
       id: args.data.post,
       published: true
     });
@@ -155,7 +155,7 @@ export const Mutation = {
   async deleteComment(parent, args, { request }, info) {
     const userId = getUserId(request);
 
-    const commentExists = await prisma.exists.comment({
+    const commentExists = await prisma.exists.Comment({
       id: args.id,
       author: {
         id: userId
@@ -174,7 +174,7 @@ export const Mutation = {
   },
   async updateComment(parent, args, { pubsub, request }, info) {
     const userId = getUserId(request);
-    const commentExists = await prisma.exists.comment({
+    const commentExists = await prisma.exists.Comment({
       id: args.id,
       author: {
         id: userId

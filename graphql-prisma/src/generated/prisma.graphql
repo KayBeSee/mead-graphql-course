@@ -1,5 +1,5 @@
 # source: http://localhost:4466
-# timestamp: Mon Dec 16 2019 22:09:58 GMT-0700 (Mountain Standard Time)
+# timestamp: Wed Dec 18 2019 21:30:42 GMT-0700 (Mountain Standard Time)
 
 type AggregateComment {
   count: Int!
@@ -407,6 +407,8 @@ input PostCreateInput {
   title: String!
   body: String!
   published: Boolean!
+  author: UserCreateOneWithoutPostsInput!
+  comments: CommentCreateManyWithoutPostInput
 }
 
 input PostCreateManyWithoutAuthorInput {

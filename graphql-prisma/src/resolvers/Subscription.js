@@ -3,7 +3,7 @@ import { getUserId } from '../utils';
 export const Subscription = {
   comment: {
     subscribe(parent, { postId }, { prisma }, info) {
-      return prisma.Subscription.comment({
+      return prisma.subscription.comment({
         where: {
           node: {
             post: {
@@ -16,7 +16,7 @@ export const Subscription = {
   },
   post: {
     subscribe(parent, args, { prisma }, info) {
-      return prisma.Subscription.post({
+      return prisma.subscription.post({
         where: {
           node: {
             published: true

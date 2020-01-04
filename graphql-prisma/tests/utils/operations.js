@@ -14,8 +14,18 @@ mutation($data: CreateUserInput!) {
   }
 }`;
 
+const getUsers = gql`
+  query {
+    users {
+      id
+      name
+      email
+    }
+  }
+`;
+
 const login = gql`
-    mutation($data: LoginUserInput) {
+    mutation($data: LoginUserInput!) {
       login (
         data: $data
       ) {
@@ -25,23 +35,23 @@ const login = gql`
   `;
 
 const getProfile = gql`
-    query {
-      me {
-        id
-        name
-        email
-      }
+  query {
+    me {
+      id
+      name
+      email
     }
-  `;
+  }
+`;
 
 const getPosts = gql`
-query {
-  posts {
-    id
-    title
-    body
-    published
-  }
+  query {
+    posts {
+      id
+      title
+      body
+      published
+    }
 }
 `;
 
@@ -56,8 +66,8 @@ const myPosts = gql`
     }
   `;
 
-const updatePost =  gql`
-    mutation($id: ID!, $data: UpdatePostInput!) {
+const updatePost = gql`
+  mutation($id: ID!, $data: UpdatePostInput!) {
     updatePost(
         id: $id,
         data: $data
@@ -67,20 +77,20 @@ const updatePost =  gql`
         body
         published
     }
-    }
+  }
 `;
 
 const createPost = gql`
-    mutation($data: CreaetPostInput!) {
-      createPost(
-        data: $data
-      ) {
-        id
-        title
-        body
-        published
-      }
+  mutation($data: CreatePostInput!) {
+    createPost(
+      data: $data
+    ) {
+      id
+      title
+      body
+      published
     }
+  }
   `;
 
 const deletePost = gql`
@@ -94,26 +104,34 @@ mutation($id: ID!) {
 `;
 
 const deleteComment = gql`
-    mutation($id: ID!) {
-        deleteComment(
-            id: $id
-        ) {
-            id
-        }
+  mutation($id: ID!) {
+    deleteComment(
+        id: $id
+    ) {
+        id
     }
+  }
 `;
 
 const subscribeToComments = gql`
-    subscription($postId: ID!) {
-        comment(postId: $postId) {
-            mutation
-            node {
-                id
-                text
-            }
-        }
+  subscription($postId: ID!) {
+      comment(postId: $postId) {
+          mutation
+          node {
+              id
+              text
+          }
+      }
+  }
+`;
+
+const subscribeToPosts = gql`
+  subscription {
+    post {
+      mutation
     }
+  }
 
 `;
 
-export { createUser, login, getProfile, getPosts, myPosts, updatePost, createPost, deletePost, deleteComment, subscribeToComments }
+export { createUser, login, getProfile, getUsers, getPosts, myPosts, updatePost, createPost, deletePost, deleteComment, subscribeToComments, subscribeToPosts }
